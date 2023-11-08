@@ -1,19 +1,21 @@
 import csv, os
 
-__location__ = os.path.realpath(
+def load_data_from_database(file_name):
+    data = []
+    __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    with open(os.path.join(__location__, file_name)) as f:
+        rows = csv.DictReader(f)
+        for r in rows:
+            data.append(dict(r))
+        return data
+    
 
-cities = []
-with open(os.path.join(__location__, 'Cities.csv')) as f:
-    rows = csv.DictReader(f)
-    for r in rows:
-        cities.append(dict(r))
+cities = load_data_from_database('Cities.csv')
+countries = load_data_from_database('Countries.csv')
+players = load_data_from_database('Players.csv')
+teams = load_data_from_database('Teams.csv')
 
-countries = []
-with open(os.path.join(__location__, 'Countries.csv')) as f:
-    rows = csv.DictReader(f)
-    for r in rows:
-        countries.append(dict(r))
 
 class DB:
     def __init__(self):
@@ -31,8 +33,14 @@ class DB:
 import copy
 class Table:
     def __init__(self, table_name, table):
+        """
+        :param: table can be either a list of data or data file's name
+        """
         self.table_name = table_name
-        self.table = table
+        if type(table) == str:
+            self.table = load_data_from_database(table)
+        else:
+            self.table = table
     
     def join(self, other_table, common_key):
         joined_table = Table(self.table_name + '_joins_' + other_table.table_name, [])
@@ -73,9 +81,13 @@ class Table:
 
 table1 = Table('cities', cities)
 table2 = Table('countries', countries)
+table3 = Table('teams', "Teams.csv")
+table4 = Table('players', "Players.csv")
 my_DB = DB()
 my_DB.insert(table1)
 my_DB.insert(table2)
+my_DB.insert(table3)
+my_DB.insert(table4)
 my_table1 = my_DB.search('cities')
 
 print("Test filter: only filtering out cities in Italy") 
