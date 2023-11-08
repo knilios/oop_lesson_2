@@ -1,4 +1,5 @@
-import csv, os
+import csv, os, math
+import numpy as np
 
 def load_data_from_database(file_name):
     data = []
@@ -133,3 +134,31 @@ for item in my_table2.table:
     if len(my_table1_filtered.table) >= 1:
         print(item['country'], my_table1_filtered.aggregate(lambda x: min(x), 'latitude'), my_table1_filtered.aggregate(lambda x: max(x), 'latitude'))
 print()
+
+print("What player on a team with “ia” in the team name played less than 200 minutes and made more than 100 passes? Here's the answer!: ")
+my_table6 = my_DB.search("players")
+my_table6_filtered = my_table6.filter(lambda x: "ia" in x['team']).filter(lambda x: int(x['minutes']) < 200).filter(lambda x: int(x['passes']) > 100)
+for item in my_table6_filtered.table:
+    print(item['surname'], "from", item['team'])
+print()
+
+print("The average number of games played for teams ranking below 10 versus teams ranking above or equal 10. Here they are!: ")
+my_table7 = my_DB.search("teams")
+above_ten = my_table7.filter(lambda x: int(x['ranking']) <= 10)
+below_ten = my_table7.filter(lambda x: int(x['ranking']) > 10)
+average_above = np.average(list(map(lambda x: int(x['games']), above_ten.select(["games"]))))
+average_below = np.average(list(map(lambda x: int(x['games']), below_ten.select(["games"]))))
+print(f"Above: {average_above:.2f} vs. Below: {average_below:.2f}")
+print()
+
+print("The average number of passes made by forwards versus by midfielders")
+my_table8 = my_DB.search("players")
+fowards_passes = my_table8.filter(lambda x: x["position"] == "forward")
+midfielders_passes = my_table8.filter(lambda x: x['position'] == 'midfielder')
+avg_fow = np.average(list(map(lambda x: int(x['passes']), fowards_passes.select(["passes"]))))
+avg_mid = np.average(list(map(lambda x: int(x['passes']), midfielders_passes.select(["passes"]))))
+print(f"fowards: {avg_fow:.2f} vs. midfielders: {avg_mid:.2f}")
+print()
+
+
+
