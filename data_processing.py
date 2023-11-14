@@ -2,46 +2,83 @@ import csv, os, math
 import numpy as np
 
 # --task 2--
+# def gen_comb_list(list_set):
+#     '''
+#         Parameters:
+#             list_set: a list of lists where each contains at least one element
+#         
+#         Returns:
+#             a list of lists, each of which is made from a combination of elements in each list in list_set
+#         
+#         Examples:
+#             gen_comb_list([[1, 2, 3]]) returns [[1], [2], [3]]
+#             gen_comb_list([[1, 2, 3], [4, 5]]) returns [[1, 4], [2, 4], [3, 4], [1, 5], [2, 5], [3, 5]]
+#             gen_comb_list([[1, 2, 3], [4, 5], [6, 7, 8]]) returns [[1, 4, 6], [2, 4, 6], [3, 4, 6], [1, 5, 6], [2, 5, 6], [3, 5, 6], [1, 4, 7], [2, 4, 7], [3, 4, 7], [1, 5, 7], [2, 5, 7], [3, 5, 7], [1, 4, 8], [2, 4, 8], [3, 4, 8], [1, 5, 8], [2, 5, 8], [3, 5, 8]]
+#     '''
+#     if len(list_set) == 1:
+#         list_set = [list_set, [1]]
+#     if len(list_set) == 2:
+#         x = combine_two(list_set[0], list_set[1])
+#         print(x)
+#         return x 
+#     x = combine_two(list_set[0], gen_comb_list(list_set[1:-1] + [list_set[-1]]))
+#     print(x)
+#     return x
+# 
+# def combine_two(a, b):
+#     print("combine_two: ",a, b)
+#     if len(b) == 1:
+#         # if type(b[0]) == list:
+#         #     print(a, b[0][0])
+#         #     return combine_first(a, b[0][0])
+#         return combine_first(a, b[0])
+#     return combine_first(a,b[0]) + combine_two(a,b[1:-1] + [b[-1]])
+# 
+# def combine_first(a=[],b=1):
+#     print("combine_fist: ", a, b)
+#     if len(a) == 1:
+#         print("hi")
+#         if isinstance(b, (list)):
+#             print("hah",[a[0]] + [ i for i in b])
+#             return [[a[0]] + [ i for i in b]]
+#         return [a[0],b]
+#     if isinstance(b, (list)):
+#         print("hah",[a[0]] + [ i for i in b])
+#         return [[a[0]]+ [ i for i in b]] + combine_first(a[1:-1] + [a[-1]],b)
+#     return [[a[0],b]] + [combine_first(a[1:-1] + [a[-1]],b)]
+
+import copy
+
 def gen_comb_list(list_set):
-    '''
-        Parameters:
-            list_set: a list of lists where each contains at least one element
-        
-        Returns:
-            a list of lists, each of which is made from a combination of elements in each list in list_set
-        
-        Examples:
-            gen_comb_list([[1, 2, 3]]) returns [[1], [2], [3]]
-            gen_comb_list([[1, 2, 3], [4, 5]]) returns [[1, 4], [2, 4], [3, 4], [1, 5], [2, 5], [3, 5]]
-            gen_comb_list([[1, 2, 3], [4, 5], [6, 7, 8]]) returns [[1, 4, 6], [2, 4, 6], [3, 4, 6], [1, 5, 6], [2, 5, 6], [3, 5, 6], [1, 4, 7], [2, 4, 7], [3, 4, 7], [1, 5, 7], [2, 5, 7], [3, 5, 7], [1, 4, 8], [2, 4, 8], [3, 4, 8], [1, 5, 8], [2, 5, 8], [3, 5, 8]]
-    '''
-    if len(list_set) == 2:
-        x = combine_two(list_set[0], list_set[1])
-        print(x)
-        return x 
-    x = combine_two(list_set[0], gen_comb_list(list_set[1:-1] + [list_set[-1]]))
-    print(x)
-    return x
+    if len(list_set) == 1:
+        start_list = []
+        for item in list_set[0]:
+            start_list.append([item])
+        return start_list
+    comb_list_temp = gen_comb_list(list_set[0:-1])
+    start_list = []
+    for list_item in comb_list_temp:
+        for val in list_set[-1]:
+            temp_item = copy.deepcopy(list_item)
+            temp_item.append(val)
+            start_list.append(temp_item)
+    return start_list
 
-def combine_two(a, b):
-    print("combine_two: ",a, b)
-    if len(b) == 1:
-        # if type(b[0]) == list:
-        #     print(a, b[0][0])
-        #     return combine_first(a, b[0][0])
-        return combine_first(a, b[0])
-    return combine_first(a,b[0]) + combine_two(a,b[1:-1] + [b[-1]])
+print("Test gen_comb_list")
+x = [1, 2, 3]
+y = [4, 5]
+z = [6, 7, 8]
+u = [9, 10]
+comb_list = gen_comb_list_recursive([x]) 
+print(comb_list)
+comb_list = gen_comb_list_recursive([x, y])
+print(comb_list)
+# comb_list = gen_comb_list_recursive([x, y, z])
+# print(comb_list, len(comb_list), [x, y, z])
 
-def combine_first(a=[],b=1):
-    print("combine_fist: ", a, b)
-    if len(a) == 1:
-        if type(a[0]) == list:
-            print(a[0] + [b])
-            return a[0] + [b]
-        return [a[0],b]
-    return [[a[0],b]] + [combine_first(a[1:-1] + [a[-1]],b)]
-
-print(gen_comb_list([[1, 2, 3], [4, 5], [6, 7, 8]]))
+print("result: ", gen_comb_list([[1, 2, 3], [4, 5], [6, 7, 8]]))
+print("result2: ", gen_comb_list([1,2,3]))
+print("result3: ", gen_comb_list([[1, 2, 3], [4, 5]]))
 
 # --task one--
 # def load_data_from_database(file_name):
