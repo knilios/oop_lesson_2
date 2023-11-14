@@ -49,13 +49,13 @@ import numpy as np
 
 import copy
 
-def gen_comb_list(list_set):
+def gen_comb_list_recursive(list_set):
     if len(list_set) == 1:
         start_list = []
         for item in list_set[0]:
             start_list.append([item])
         return start_list
-    comb_list_temp = gen_comb_list(list_set[0:-1])
+    comb_list_temp = gen_comb_list_recursive(list_set[0:-1])
     start_list = []
     for list_item in comb_list_temp:
         for val in list_set[-1]:
@@ -76,9 +76,6 @@ print(comb_list)
 # comb_list = gen_comb_list_recursive([x, y, z])
 # print(comb_list, len(comb_list), [x, y, z])
 
-print("result: ", gen_comb_list([[1, 2, 3], [4, 5], [6, 7, 8]]))
-print("result2: ", gen_comb_list([1,2,3]))
-print("result3: ", gen_comb_list([[1, 2, 3], [4, 5]]))
 
 # --task one--
 # def load_data_from_database(file_name):
